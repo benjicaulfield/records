@@ -1,0 +1,83 @@
+body {
+  font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+  background-color: #E0FFFF;
+  color: #333;
+}
+
+.hero {
+  background: #039;
+  padding: 20px;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.hero-overlay h1, .hero-overlay p {
+  margin: 0;
+  font-size: 20px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: center;
+  background: #6698CB;
+  padding: 10px;
+}
+
+.navbar .logo {
+  content: url("https://web.archive.org/web/20050412013714im_/http://i.myspace.com/site/images/blog/blogLogo.gif");
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 10px;
+}
+
+.nav-link {
+  color: #FFFFFF;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.login-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.form-control {
+  font-size: 10px;
+  padding: 4px;
+  border: 1px solid #039;
+}
+
+.btn {
+  font-size: 10px;
+  background-color: #ff6600;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.content-container {
+  padding: 20px;
+}
+
+.box {
+  background-color: #b5ccfb;
+  border: 1px solid #003399;
+  padding: 10px;
+  margin-bottom: 15px;
+  font-size: 10px;
+  text-align: left;
+}
+
+.friends, .comments {
+  background-color: #fc9;
+  border: 1px solid #ff6600;
+}

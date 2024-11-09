@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "django.contrib.postgres",
     "rest_framework",
     "rest_framework.authtoken",
-    "app.apps.AppConfig",
     "scraper",
     "processing",
     "api",
@@ -80,6 +79,9 @@ DATABASES = {
         "USER": config("DB_USER"),
         "PASSWORD": config("DB_PASSWORD"),
         "HOST": config("DB_HOST"),
+        "TEST": {
+            "NAME": "test_db",
+        }
     }
 }
 

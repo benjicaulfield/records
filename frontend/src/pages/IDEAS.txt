@@ -1,0 +1,3 @@
+"millionaire ideas": a list of things you'd fund if you were worth like 50 million dollars.
+    "ideas":
+        

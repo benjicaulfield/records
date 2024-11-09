@@ -1,16 +1,8 @@
-import os
-import math
-import random
 from decimal import Decimal
-
-import openai
 from dotenv import load_dotenv
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.urls import reverse_lazy
-from django.views import View
-from django.http import JsonResponse
 from django.db.models import Window, F, Sum
 from django.db.models.functions import RowNumber
 from processing.models import Record, Listing, LoserListing, Seller
@@ -106,75 +98,5 @@ class TopRecordsByBudgetAPIView(APIView):
         result.sort(key=lambda x: x['total_score'], reverse=True)
         return Response(result)
 
-class RecordRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Record.objects.all()
-    serializer_class = RecordSerializer
 
-class TokenizeRecordsView(View):
-    openai.api_key = os.getenv("OPENAI_API_KEY")
 
-    def get(self, request, *args, **kwargs):
-        try:
-            all_records = Record.objects.all()
-            if not all_records:
-                return JsonResponse({"error": "No records found in the database."}, status=404)
-        except Exception as e:
-            return JsonResponse({"error": f"Error fetching records from database: {e}"}, status=500)
-
-        all_tokens = []
-        extracted_info = []
-
-        for record in all_records:
-            try:
-                tokens = record.tokenize()
-                info = record.extract_info()
-                tokens_with_metadata = record.add_metadata(tokens)
-                all_tokens.extend(tokens_with_metadata)
-                extracted_info.append(info)
-            except AttributeError as e:
-                print(f"Error accessing fields for record with ID {record.id}: {e}")
-            except Exception as e:
-                print(f"Unexpected error processing record with ID {record.id}: {e}")
-
-        # Convert tokens to IDs
-        token_ids, _ = convert_tokens_to_ids([token for token, _ in all_tokens])
-
-        # Add special context tokens
-        token_ids_with_context = add_special_context_tokens(token_ids)
-
-        # Byte Pair Encoding
-        bpe_tokens = byte_pair_encoding(token_ids_with_context)
-
-        # Data sampling with sliding window
-        sampled_data = data_sampling_with_sliding_window(token_ids_with_context)
-
-        # Create token embeddings
-        embeddings = create_token_embeddings(token_ids_with_context)
-
-        # Encode word positions
-        encoded_positions = encode_word_positions(token_ids_with_context)
-
-        response = openai.Completion.create(
-            engine="text-davinci-003",
-            prompt=f"Given the tokens {token_ids_with_context}, please provide a refined and smooth language output.",
-            max_tokens=150,
-            n=1,
-            stop=None,
-            temperature=0.7,
-        )
-
-        chatgpt_output = response.choices[0].text.strip()
-
-        response_data = {
-            "unique_tokens": list(set(token_ids_with_context)),
-            "token_ids": token_ids,
-            "token_ids_with_context": token_ids_with_context,
-            "bpe_tokens": bpe_tokens,
-            "sampled_data": sampled_data,
-            "embeddings": embeddings,
-            "encoded_positions": encoded_positions,
-            "extracted_info": extracted_info,
-            "chatgpt_output": chatgpt_output,
-        }
-
-        return JsonResponse(response_data)

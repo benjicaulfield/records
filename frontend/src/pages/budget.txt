@@ -1,0 +1,75 @@
+
+
+
+
+return (
+  <div className="container">
+    <main>
+      <div className="row profile">
+        <div className="col w-40 left">
+          <div className="stats">
+            <h2>Record Stats</h2>
+            <div>
+              <label htmlFor="budget">Budget:</label>
+              <input
+                type="number"
+                id="budget"
+                name="budget"
+                value={budget}
+                onChange={(e) => setBudget(Number(e.target.value))}
+                placeholder="Enter your budget"
+              />
+            </div>
+
+            {isLoading && <p>Loading records...</p>}
+            {error && <p>Error: {error.message}</p>}
+
+            {!isLoading && !error && records.length === 0 && (
+              <p>No records found.</p>
+            )}
+
+            {!isLoading && !error && records.length > 0 && (
+              <div>
+                {records.map((sellerRecord) => (
+                  <div key={sellerRecord.seller} className="seller-table">
+                    <h3>{sellerRecord.seller}</h3>
+                    <p>Total Score: {sellerRecord.total_score.toFixed(2)}</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Artist</th>
+                          <th>Title</th>
+                          <th>Condition</th>
+                          <th>Price</th>
+                          <th>Wants</th>
+                          <th>Haves</th>
+                          <th>Score</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sellerRecord.records.map((record) => (
+                          <tr key={record.id}>
+                            <td>{record.artist}</td>
+                            <td>{record.title}</td>
+                            <td>{record.media_condition}</td>
+                            <td>{record.record_price}</td>
+                            <td>{record.wants}</td>
+                            <td>{record.haves}</td>
+                            <td>{record.score.toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+);
+};
+
+export default ByBudget;
