@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import { Listing } from './ByBudget';
+import { Listing } from '../types/interfaces';
 
 export const Recommender: React.FC = () => {
   const [listings, setListings] = useState<Listing[]>([]);
@@ -55,7 +55,7 @@ return (
           <div key={listing.id} className="record-item">
             <h3>{listing.record.artist} - {listing.record.title}</h3>
             <p>Catalog No: {listing.record.catno}</p>
-            <p>Condition: {listing.record.media_condition}</p>
+            <p>Condition: {listing.media_condition}</p>
             <p>Price: ${listing.record_price}</p>
             <p>Wants: {listing.record.wants}, Haves: {listing.record.haves}</p>
             <p>Score: {listing.score}</p>

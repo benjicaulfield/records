@@ -1,4 +1,5 @@
 from decimal import Decimal
+import random
 from dotenv import load_dotenv
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -32,7 +33,14 @@ class TopRecordsBySellerAPIView(APIView):
         serializer = RecordSerializer(ranked_records, many=True)
         return Response(serializer.data)
     
-
+class DashboardRecordsAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        top_listings = Listing.objects.order_by('-score')[:10]
+        random_listings = Listing.objects.order_by('?')[:10]
+        all_records = (top_listings | random_listings).order_by('?')
+        serializer = ListingSerializer(all_records, many=True)
+        return Response(serializer.data)
+    
 class RecommenderAPIView(APIView):
     def get(self, request, *args, **kwargs):
         random_listings = Listing.objects.order_by('?')[:20]

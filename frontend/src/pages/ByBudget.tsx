@@ -2,21 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../css/global.css';
-
-import { Record } from './BySeller';
-
-interface SellerGroup {
-  seller: string;
-  totalScore: number;
-  records: Record[];
-}
-
-export interface Listing {
-  id: number;
-  record: Record;
-  score: number;
-  record_price: number;
-}
+import { SellerGroup } from '../types/interfaces';
 
 const ByBudget: React.FC = () => {
   const [budget, setBudget] = useState<number>(0); // Set your budget here
@@ -57,7 +43,7 @@ const ByBudget: React.FC = () => {
             <ul>
               {sellerRecord.records.map((record) => (
                 <li key={record.id}>
-                  {record.title} - ${record.record_price}
+                  {record.title}
                 </li>
               ))}
             </ul>
