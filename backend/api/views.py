@@ -4,10 +4,15 @@ from dotenv import load_dotenv
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.db.models import Window, F, Sum
 from django.db.models.functions import RowNumber
 from processing.models import Record, Listing, LoserListing, Seller
-from .serializers import RecordSerializer, ListingSerializer
+from .serializers import RecordSerializer, ListingSerializer, UserSerializer
  
 load_dotenv()
 
@@ -106,5 +111,49 @@ class TopRecordsByBudgetAPIView(APIView):
         result.sort(key=lambda x: x['total_score'], reverse=True)
         return Response(result)
 
+class LoginView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
+            response = Response({'token': token.key})
+            response.set_cookie('auth_token', token.key, httponly=True)
+            return response
+        else:
+            return Response({'error': 'Invalid credentials'}, status=401)
+        
+class UserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        serlializer = UserSerializer(request.user)
+        return Response(serlializer.data)
+    
+class LogoutView(APIView):
+    def post(self, request):
+        request.user.auth_token.delete()
+        response = Response({'detail': 'Logged out'})
+        response.delete_cookie('auth_token')
+        return response
+    
+class RegisterView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        email = request.data.get('email')
 
+        # Check if all fields are provided
+        if not username or not password or not email:
+            return Response({'error': 'Please provide username, email, and password'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create user and return a success message
+        user = User.objects.create_user(username=username, password=password, email=email)
+        user.save()
+
+        return Response({'success': 'User created successfully'}, status=status.HTTP_201_CREATED)    

@@ -101,3 +101,15 @@ table td {
     opacity: 0;
   }
 }
+
+form input,
+form button {
+  width: auto;
+}
+
+form input, form button {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
